@@ -1,0 +1,125 @@
+DABING-MIB DEFINITIONS ::= BEGIN
+
+--
+-- MIB objects for Dabing+ project
+--
+
+IMPORTS
+    MODULE-IDENTITY, Integer32, OBJECT-TYPE, enterprises
+        FROM SNMPv2-SMI;
+
+dabing MODULE-IDENTITY
+    LAST-UPDATED "202010210000Z"
+    ORGANIZATION "www.stuba.sk"
+    CONTACT-INFO "email: xsvajkaj@stuba.sk"
+    DESCRIPTION
+        "MIB objects for Dabing+ project"
+    REVISION
+        "202010210000Z"
+    DESCRIPTION
+        "First Draft"
+    ::= { enterprises 55532 }
+
+
+-- Structure (Starts: 1.3.6.1.4.1.55532...)
+-- [1]: dabing
+--     [1]: dabingParameters
+--         [1]: dabingChannel
+--     [2]: dabingDeviceInfo
+--         [1]: dabingDeviceHostname
+--         [2]: dabingDeviceLocation
+--         [3]: dabingDeviceStatus
+--     [3]: dabingNotifications
+--         [1]: dabingNotificationPrefix
+--             [1]: dabingMalfunctioningBroadcastingTrap
+--         [2]: dabingNotificationObjects
+--             [1]: dabingPowerSpectralDensity
+
+
+dabingParameters                OBJECT IDENTIFIER ::= { dabing 1 }
+dabingDeviceInfo                OBJECT IDENTIFIER ::= { dabing 2 }
+dabingNotifications             OBJECT IDENTIFIER ::= { dabing 3 }
+
+dabingNotificationPrefix        OBJECT IDENTIFIER ::= { dabingNotifications 1 }
+dabingNotificationObjects       OBJECT IDENTIFIER ::= { dabingNotifications 2 }
+
+--
+-- Dabing Parameters
+--
+
+dabingChannel OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+        "This is a simple object which is a OCTET STRING. It's value
+         indicates the Channel of Digital Audio Broadasting which it
+         should monitor. Changing it's value will change the frequency
+         at which the device performs monitoring.
+
+         Note that not all values are possible due to the tuner's 
+         properties on receiver's side."
+    DEFVAL { "12C" }
+    ::= { dabingParameters 1 }
+
+
+--
+-- Dabing Device Info
+--
+
+dabingDeviceHostname OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "A host name that exists in the /etc/hosts (unix) file."
+    ::= { dabingDeviceInfo 1 }
+
+dabingDeviceLocation OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Physical location of the device. It can be described
+         either by name of the location, GPS location or etc."
+    ::= { dabingDeviceInfo 2 }
+
+dabingDeviceStatus OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "Represent the current status of the device or
+         if used in a trap then the status of the malfunction."
+    ::= { dabingDeviceInfo 3 }
+
+
+--
+-- Dabing Notification Objects
+--
+
+dabingPowerSpectralDensity OBJECT-TYPE
+    SYNTAX      OCTET STRING
+    MAX-ACCESS  accessible-for-notify
+    STATUS      current
+    DESCRIPTION
+        "A simple OCTET STRING object, to act as a payload for the
+         DabingMalfunctioningBroadcastingTrap. The value is usually
+         a floating point number expressing calculated 
+         Power Spectral Density of the broadcasting tower."
+    DEFVAL { "0.0" }
+    ::= { dabingNotificationObjects 1 }
+
+
+--
+-- Dabing Notification Prefix
+--
+
+dabingMalfunctioningBroadcastingTrap NOTIFICATION-TYPE
+    OBJECTS { dabingPowerSpectralDensity }
+    STATUS  current
+    DESCRIPTION
+        "A notification used when the broadcasting tower senses a malfunction."
+    ::= { dabingNotificationPrefix 1 }
+
+END
