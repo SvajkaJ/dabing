@@ -19,7 +19,7 @@ test
 
 install
 
-server.py
+
 static
 config.json
 frontend
@@ -28,5 +28,4 @@ HTTP
 postgres
 
 dabing/monitor.py
-dabing/SNMPhandler.py
 dabing/eventHandler.py

@@ -5,10 +5,10 @@
 
 from datetime import datetime # https://docs.python.org/3/library/datetime.html#module-datetime
 from time import sleep
-#import SNMPhandler
+from snmp import sendTrap
 from postgreinterface import PostgresInterface
-from tools import rFile
 import json
+import os
 
 
 class Evaluator:
@@ -21,7 +21,8 @@ class Evaluator:
         self.syncState   = { "isOk": True, "tstz": 0, "trigger": 0 }
 
     def updateConfig(self):
-        self.config = json.loads(rFile("/home/pi/dabing/alarmConfig.json"))
+        with open(os.path.join(os.path.expanduser('~'),"dabing/alarmConfig.json"), "r") as f:
+            self.config = json.load(f)
         # config: { 'enabled': True, 'low': 20, 'high': 50, 'trigger': 10, 'min': 0, 'max': 80 }
 
     def __evaluateV(self, v, c, s, tstz: datetime):
@@ -84,9 +85,10 @@ class Evaluator:
 
 
 def onError(src):
+    print("Sending SNMP Trap!")
     print(f"Alarm from \"{src}\"!")
-    #print("Sending SNMP Trap!")
-    #SNMPhandler.sendTrap()
+    sendTrap(f"Alarm from \"{src}\"!")
+    print("Trap sent successfully!")
 
 
 if __name__ == "__main__":

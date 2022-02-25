@@ -3,7 +3,7 @@
         "enabled": true,
         "low": 5,
         "high": 25,
-        "trigger": 10,
+        "trigger": 60,
         "min": 0,
         "max": 50
     },
