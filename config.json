@@ -1,0 +1,12 @@
+{
+    "channel": "12C",
+    "interval": "1000",
+
+    "agentIdentifier": 0,
+    "agentHostname": "CustomHostname",
+    "agentLocation": "Unknown",
+    "agentStatus": 0,
+    "managerHostname": "192.168.178.25",
+    "managerPort": 16200,
+    "trapEnabled": false
+}

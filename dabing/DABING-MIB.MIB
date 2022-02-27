@@ -37,7 +37,6 @@ dabing MODULE-IDENTITY
 --             [2]: dabingTestTrap
 --         [2]: dabingNotificationObjects
 --             [1]: dabingGenericPayload
---             [2]: dabingPowerSpectralDensity
 
 
 dabingParameters                OBJECT IDENTIFIER ::= { dabing 1 }
@@ -129,25 +128,13 @@ dabingGenericPayload OBJECT-TYPE
     DEFVAL { "TEST" }
     ::= { dabingNotificationObjects 1 }
 
-dabingPowerSpectralDensity OBJECT-TYPE
-    SYNTAX      OCTET STRING
-    MAX-ACCESS  accessible-for-notify
-    STATUS      current
-    DESCRIPTION
-        "A simple OCTET STRING object, to act as a payload for the
-         DabingMalfunctioningBroadcastingTrap. The value is usually
-         a floating point number expressing calculated 
-         Power Spectral Density of the broadcasting tower."
-    DEFVAL { "0.0" }
-    ::= { dabingNotificationObjects 2 }
-
 
 --
 -- Dabing Notification Prefix
 --
 
 dabingMalfunctioningBroadcastingTrap NOTIFICATION-TYPE
-    OBJECTS { dabingPowerSpectralDensity }
+    OBJECTS { dabingGenericPayload }
     STATUS  current
     DESCRIPTION
         "A notification used when the broadcasting tower senses a malfunction."

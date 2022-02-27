@@ -7,8 +7,7 @@ from datetime import datetime # https://docs.python.org/3/library/datetime.html#
 from time import sleep
 from snmp import sendTrap
 from postgreinterface import PostgresInterface
-import json
-import os
+from tools import getConfig, getAlarmConfig
 
 
 class Evaluator:
@@ -21,8 +20,7 @@ class Evaluator:
         self.syncState   = { "isOk": True, "tstz": 0, "trigger": 0 }
 
     def updateConfig(self):
-        with open(os.path.join(os.path.expanduser('~'),"dabing/alarmConfig.json"), "r") as f:
-            self.config = json.load(f)
+        self.config = getAlarmConfig()
         # config: { 'enabled': True, 'low': 20, 'high': 50, 'trigger': 10, 'min': 0, 'max': 80 }
 
     def __evaluateV(self, v, c, s, tstz: datetime):
@@ -85,9 +83,14 @@ class Evaluator:
 
 
 def onError(src):
+
+    config = getConfig()
+    host = config['managerHostname']
+    port = config['managerPort']
+
     print("Sending SNMP Trap!")
     print(f"Alarm from \"{src}\"!")
-    sendTrap(f"Alarm from \"{src}\"!")
+    sendTrap(host, port, f"Alarm from \"{src}\"!")
     print("Trap sent successfully!")
 
 
@@ -149,6 +152,6 @@ if __name__ == "__main__":
 
                 last_tstz = record[-1].timestamp()
 
-            sleep(1)
+            sleep(1)  # the duration of sleep does not depend on the welle
     except KeyboardInterrupt:
         print("End of evaluation!")

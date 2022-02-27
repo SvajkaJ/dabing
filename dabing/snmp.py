@@ -3,29 +3,20 @@
 
 from pysnmp.hlapi import *
 from pysnmp.smi import builder, view
-from os import getcwd
 from uptime import *
-import json
-import os
+from dabing import getMIBSource
 
 
-def sendTrap(payload):
+def sendTrap(host, port, payload):
     """
     Advanced example of sending a notification (trap).
 
     Sends 'dabingMalfunctioningBroadcastingTrap' with 'dabingGenericPayload' as a payload.
-    Manager's hostname and port is automatically acquired from config.json.
+    Manager's hostname (IP address) and port must be passed as an argument to the function.
+    Throws a generic Exception when error occurs.
     """
 
-    # host and port must be loaded from config.json
-    #host = '192.168.178.35'
-    #port = 16200
-
-    with open(os.path.join(os.path.expanduser('~'),"dabing/config.json"), "r") as f:
-        config = json.load(f)
-
-    host = config['snmp']['managerHostname']
-    port = config['snmp']['managerPort']
+    myMIBSource = getMIBSource()
 
     # Output:
     # SNMPv2-MIB::sysUpTime.0
@@ -43,7 +34,7 @@ def sendTrap(payload):
 
     # Assemble MIB view controller
     mibBuilder = builder.MibBuilder()
-    mibBuilder.addMibSources(builder.DirMibSource(getcwd()))    # Adding path of my custom MIB
+    mibBuilder.addMibSources(builder.DirMibSource(myMIBSource))    # Adding path of my custom MIB
     mibViewController = view.MibViewController(mibBuilder)
 
     errorIndication, errorStatus, errorIndex, varBinds = next(
@@ -65,9 +56,7 @@ def sendTrap(payload):
                 ),
                 ObjectType(
                     ObjectIdentity('DABING-MIB', 'dabingGenericPayload', 0), OctetString(payload)
-                ).addMibSource(
-                    getcwd()
-                )
+                ).addMibSource(myMIBSource)
             )
         )
     )
@@ -81,8 +70,11 @@ def testTrap(host, port, payload):
     Advanced example of sending a notification (trap).
 
     Sends 'dabingTestTrap' with 'dabingGenericPayload' as a payload.
-    Manager's hostname and port must be passed to the function.
+    Manager's hostname (IP address) and port must be passed as an argument to the function.
+    Throws a generic Exception when error occurs.
     """
+
+    myMIBSource = getMIBSource()
 
     # Output:
     # SNMPv2-MIB::sysUpTime.0
@@ -100,7 +92,7 @@ def testTrap(host, port, payload):
 
     # Assemble MIB view controller
     mibBuilder = builder.MibBuilder()
-    mibBuilder.addMibSources(builder.DirMibSource(getcwd()))    # Adding path of my custom MIB
+    mibBuilder.addMibSources(builder.DirMibSource(myMIBSource))    # Adding path of my custom MIB
     mibViewController = view.MibViewController(mibBuilder)
 
     errorIndication, errorStatus, errorIndex, varBinds = next(
@@ -122,9 +114,7 @@ def testTrap(host, port, payload):
                 ),
                 ObjectType(
                     ObjectIdentity('DABING-MIB', 'dabingGenericPayload', 0), OctetString(payload)
-                ).addMibSource(
-                    getcwd()
-                )
+                ).addMibSource(myMIBSource)
             )
         )
     )
@@ -134,7 +124,12 @@ def testTrap(host, port, payload):
 
 
 def simpleTrap(host, port, payload):
-    """Simple example of sending a notification (trap)."""
+    """
+    Simple example of sending a notification (trap).
+
+    Manager's hostname (IP address) and port must be passed as an argument to the function.
+    Throws a generic Exception when error occurs.
+    """
     errorIndication, errorStatus, errorIndex, varBinds = next(
         sendNotification(
             SnmpEngine(),

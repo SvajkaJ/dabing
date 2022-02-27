@@ -11,17 +11,15 @@ frontend/package-lock.json
 frontend/tsconfig.json
 
 
-SNMP/__pychache__
-
-dabing/db/__pychache__
-dabing/__pychache__
+snmp/__pycache__
+__pycache__
+dabing/__pycache__
 test
 
 install
 
 
 static
-config.json
 frontend
 docs
 HTTP

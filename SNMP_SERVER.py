@@ -8,10 +8,10 @@ from pysnmp.smi import builder
 from pysnmp.entity import engine, config
 from pysnmp.entity.rfc3413 import cmdrsp, context, ntfrcv
 from pysnmp.carrier.asyncore.dgram import udp
-import json
-from os import getcwd
 
-HOST = '192.168.178.24'
+from dabing import getConfig, updateConfig, getMIBSource
+
+HOST = '0.0.0.0'
 PORT = 16100
 PORT_TRAP = 16200
 
@@ -55,83 +55,96 @@ snmpContext = context.SnmpContext(snmpEngine)
 
 mibBuilder = snmpContext.getMibInstrum().getMibBuilder()
 # Adding path of my custom MIB
-mibBuilder.addMibSources(builder.DirMibSource(getcwd()))
+mibBuilder.addMibSources(builder.DirMibSource(getMIBSource()))
 
 # A base class for a custom Managed Object
 MibScalarInstance, = mibBuilder.importSymbols('SNMPv2-SMI', 'MibScalarInstance')
 
 
-def getConfiguration():
-    # Read current configuration
-    with open('../config.json', 'r') as f:
-        return json.loads(f.read())
-
-def setConfiguration(key, value):
-    data = getConfiguration()
-    # Set new value
-    data[key] = value
-    # Save new configuration
-    with open('../config.json', 'w') as f:
-        f.write(str(json.dumps(data)))
-
 class dabingChannelClassInstance(MibScalarInstance):
     def readGet(self, name, *args):
         print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
-        value = getConfiguration()["dabingChannel"]
+        value = getConfig()["channel"]
         return name, self.syntax.clone(value)
     def writeCommit(self, name, val, idx, acInfo):
-        setConfiguration("dabingChannel", str(val))
+        updateConfig({ "channel": str(val) })
 
-class dabingDeviceHostnameClassInstance(MibScalarInstance):
+class dabingIntervalClassInstance(MibScalarInstance):
     def readGet(self, name, *args):
         print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
-        value = getConfiguration()["dabingDeviceHostname"]
+        value = getConfig()["interval"]
         return name, self.syntax.clone(value)
     def writeCommit(self, name, val, idx, acInfo):
-        setConfiguration("dabingDeviceHostname", str(val))
+        updateConfig({ "interval": str(val) })
 
-class dabingDeviceLocationClassInstance(MibScalarInstance):
+class dabingAgentIdentifierClassInstance(MibScalarInstance):
     def readGet(self, name, *args):
         print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
-        value = getConfiguration()["dabingDeviceLocation"]
+        value = getConfig()["agentIdentifier"]
         return name, self.syntax.clone(value)
     def writeCommit(self, name, val, idx, acInfo):
-        setConfiguration("dabingDeviceLocation", str(val))
+        updateConfig({ "agentIdentifier": int(val) })
 
-class dabingDeviceStatusClassInstance(MibScalarInstance):
+class dabingAgentHostnameClassInstance(MibScalarInstance):
     def readGet(self, name, *args):
         print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
-        value = getConfiguration()["dabingDeviceLocation"]
+        value = getConfig()["agentHostname"]
         return name, self.syntax.clone(value)
     def writeCommit(self, name, val, idx, acInfo):
-        setConfiguration("dabingDeviceStatus", int(val))
+        updateConfig({ "agentHostname": str(val) })
+
+class dabingAgentLocationClassInstance(MibScalarInstance):
+    def readGet(self, name, *args):
+        print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
+        value = getConfig()["agentLocation"]
+        return name, self.syntax.clone(value)
+    def writeCommit(self, name, val, idx, acInfo):
+        updateConfig({ "agentLocation": str(val) })
+
+class dabingAgentStatusClassInstance(MibScalarInstance):
+    def readGet(self, name, *args):
+        print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
+        value = getConfig()["agentStatus"]
+        return name, self.syntax.clone(value)
+    def writeCommit(self, name, val, idx, acInfo):
+        updateConfig({ "agentStatus": int(val) })
 
 # --------------------------------------------- #
 # --- Managed Object Instance Specification --- #
 # --------------------------------------------- #
 
-dabingChannel, dabingDeviceHostname, dabingDeviceLocation, dabingDeviceStatus, = mibBuilder.importSymbols(
+dabingChannel, dabingInterval, dabingAgentIdentifier, dabingAgentHostname, dabingAgentLocation, dabingAgentStatus, = mibBuilder.importSymbols(
     'DABING-MIB',
     'dabingChannel',
-    'dabingDeviceHostname',
-    'dabingDeviceLocation',
-    'dabingDeviceStatus'
+    'dabingInterval',
+    'dabingAgentIdentifier',
+    'dabingAgentHostname',
+    'dabingAgentLocation',
+    'dabingAgentStatus'
 )
 
 dabingChannelInstance = dabingChannelClassInstance(
     dabingChannel.name, (0,), dabingChannel.syntax
 )
 
-dabingDeviceHostnameInstance = dabingDeviceHostnameClassInstance(
-    dabingDeviceHostname.name, (0,), dabingDeviceHostname.syntax
+dabingIntervalInstance = dabingIntervalClassInstance(
+    dabingInterval.name, (0,), dabingInterval.syntax
 )
 
-dabingDeviceLocationInstance = dabingDeviceLocationClassInstance(
-    dabingDeviceLocation.name, (0,), dabingDeviceLocation.syntax
+dabingAgentIdentifierInstance = dabingAgentIdentifierClassInstance(
+    dabingAgentIdentifier.name, (0,), dabingAgentIdentifier.syntax
 )
 
-dabingDeviceStatusInstance = dabingDeviceStatusClassInstance(
-    dabingDeviceStatus.name, (0,), dabingDeviceStatus.syntax
+dabingAgentHostnameInstance = dabingAgentHostnameClassInstance(
+    dabingAgentHostname.name, (0,), dabingAgentHostname.syntax
+)
+
+dabingAgentLocationInstance = dabingAgentLocationClassInstance(
+    dabingAgentLocation.name, (0,), dabingAgentLocation.syntax
+)
+
+dabingAgentStatusInstance = dabingAgentStatusClassInstance(
+    dabingAgentStatus.name, (0,), dabingAgentStatus.syntax
 )
 
 # Register Managed Object with a MIB tree
@@ -139,9 +152,11 @@ mibBuilder.exportSymbols(
     # '__' prefixed MIB modules take precedence on indexing
     '__MY-DABING-MIB',
     dabingChannelInstance = dabingChannelInstance,
-    dabingDeviceHostnameInstance = dabingDeviceHostnameInstance,
-    dabingDeviceLocationInstance = dabingDeviceLocationInstance,
-    dabingDeviceStatusInstance = dabingDeviceStatusInstance
+    dabingIntervalInstance = dabingIntervalInstance,
+    dabingAgentIdentifierInstance = dabingAgentIdentifierInstance,
+    dabingAgentHostnameInstance = dabingAgentHostnameInstance,
+    dabingAgentLocationInstance = dabingAgentLocationInstance,
+    dabingAgentStatusInstance = dabingAgentStatusInstance
 )
 
 # ----------------------------------------------------- #
