@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-
+# Autor: SvajkaJ
+# Datum: 28.2.2022
 
 from pysnmp.hlapi import *
 from pysnmp.smi import builder, view
@@ -123,7 +124,7 @@ def testTrap(host, port, payload):
         raise Exception("Unexpected error occured in testTrap()!")
 
 
-def simpleTrap(host, port, payload):
+def __SNMP_TRAP(host, port, payload):
     """
     Simple example of sending a notification (trap).
 
@@ -148,10 +149,81 @@ def simpleTrap(host, port, payload):
         raise Exception("Unexpected error occured in simpleTrap()!")
 
 
+def __SNMP_GET(host, port, obj):
+    """Executes SNMP GET request of any object in DABING-MIB.MIB."""
+
+    myMIBSource = getMIBSource()
+
+    errorIndication, errorStatus, errorIndex, varBinds = next(
+        getCmd(
+            SnmpEngine(),
+            CommunityData('public'),
+            UdpTransportTarget((host, port)),
+            ContextData(),
+            ObjectType(
+                ObjectIdentity(
+                    'DABING-MIB', obj, 0
+                ).addMibSource(myMIBSource)
+            )
+        )
+    )
+
+    if errorIndication:
+        print(errorIndication)
+    elif errorStatus:
+        print('%s at %s' % (errorStatus.prettyPrint(), errorIndex and varBinds[int(errorIndex) - 1][0] or '?'))
+    else:
+        for varBind in varBinds:
+            print(' = '.join([x.prettyPrint() for x in varBind]))
+
+
+def __SNMP_SET(host, port, obj, value):
+    """Executes SNMP SET request of any object in DABING-MIB.MIB."""
+
+    myMIBSource = getMIBSource()
+
+    errorIndication, errorStatus, errorIndex, varBinds = next(
+        setCmd(
+            SnmpEngine(),
+            CommunityData('public'),
+            UdpTransportTarget((host, port)),
+            ContextData(),
+            ObjectType(
+                ObjectIdentity(
+                    'DABING-MIB', obj, 0
+                ).addMibSource(myMIBSource),
+                value
+            )
+        )
+    )
+
+    if errorIndication:
+        print(errorIndication)
+    elif errorStatus:
+        print('%s at %s' % (errorStatus.prettyPrint(), errorIndex and varBinds[int(errorIndex) - 1][0] or '?'))
+    else:
+        for varBind in varBinds:
+            print(' = '.join([x.prettyPrint() for x in varBind]))
+
+
 if __name__ == "__main__":
 
-    host = "192.168.178.25"
-    port = 162
-    payload = f"Testing SNMP Trap."
+    objs = [
+        ('dabingChannel', '10A'),         # Type: OCTET STRING    read-write
+        ('dabingInterval', '500'),        # Type: OCTET STRING    read-write
+        ('dabingAgentIdentifier', 1),     # Type: Integer32       read-write
+        ('dabingAgentHostname', 'Test'),  # Type: OCTET STRING    read-only
+        ('dabingAgentLocation', 'Moon'),  # Type: OCTET STRING    read-only
+        ('dabingAgentStatus', 20)         # Type: Integer32       read-only
+    ]
 
-    simpleTrap(host, port, payload)
+    # Testing GET request
+    for obj in objs:
+        __SNMP_GET('192.168.178.35', 16100, obj[0])
+
+    # Testing SET request
+    for obj in objs:
+        __SNMP_SET('192.168.178.35', 16100, obj[0], obj[1])
+
+    # Testing Trap
+    #__SNMP_TRAP('192.168.178.25', 162, f"Testing SNMP Trap.")

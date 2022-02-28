@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # Autor: SvajkaJ
 # Datum: 27.2.2022
 

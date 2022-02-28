@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-
+# Autor: SvajkaJ
+# Datum: 27.2.2022
 
 from flask import Flask
 from flask import request, jsonify

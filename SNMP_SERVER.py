@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+# Autor: SvajkaJ
+# Datum: 27.2.2022
 
 """
 Advanced example of SNMP Server responding to SNMP GET/SET queries.
