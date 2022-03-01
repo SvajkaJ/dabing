@@ -5,9 +5,10 @@
 
 from datetime import datetime # https://docs.python.org/3/library/datetime.html#module-datetime
 from time import sleep
-from snmp import sendTrap
-from postgreinterface import PostgresInterface
-from tools import getConfig, getAlarmConfig
+from dabing import sendTrap
+from dabing import PostgresInterface
+from dabing import getConfig, getAlarmConfig
+import signal
 
 
 class Evaluator:
@@ -94,7 +95,16 @@ def onError(src):
     print("Trap sent successfully!")
 
 
+running = True
+def mySignalHandler(signum, frame):
+    global running
+    running = False
+
+
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT,  mySignalHandler)
+    signal.signal(signal.SIGTERM, mySignalHandler)
+
     try:
         # Init
         db = PostgresInterface()
@@ -102,7 +112,7 @@ if __name__ == "__main__":
         last_tstz = 0
 
         # Main never-ending loop
-        while True:
+        while running:
 
             # Update alarm configuration
             e.updateConfig()
@@ -154,4 +164,6 @@ if __name__ == "__main__":
 
             sleep(1)  # the duration of sleep does not depend on the welle
     except KeyboardInterrupt:
-        print("End of evaluation!")
+        print("KeyboardInterrupt: Program interrupted by user.")
+    finally:
+        print("EVALUATION.py closes down!")
