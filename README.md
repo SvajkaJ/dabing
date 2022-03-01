@@ -1,5 +1,5 @@
 # About
-My Master's thesis: Monitoring device of DAB+ transmission.
+My Master's thesis: Monitoring device of DAB+ broadcasting.
 
 This work is using Welle.io under the hood. I would like to thank the developers of Welle.io for creating, maintaining and sharing this wonderful application.
 

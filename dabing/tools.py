@@ -35,12 +35,12 @@ DABchannels = {
 
 def getRootDir():
     """Returns the absolute path to the root of the project."""
-    return os.path.abspath(os.curdir)
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def getMIBSource():
     """Returns the location of the directory where my custom MIB is located."""
-    return os.path.join(getRootDir(), "dabing/")
+    return os.path.dirname(os.path.abspath(__file__))
 
 
 def __readJSON(filePath):
@@ -82,24 +82,31 @@ def start():
     """It is assumed that the configuration has already been set."""
     # Load the configuration
     config = getConfig()
+    root = getRootDir()
 
-    # Start SNMP server
-    cmd = f"nohup python3 $HOME/dabing/dabing/snmp/SNMPserver.py >/dev/null 2>&1 &"
-    subprocess.run(cmd, shell=True)
-
-    # Start Welle.io
-    #cmd = f"nohup ~/welle-cli -c {config['channel']} -PC 1 -w 7575 &>$HOME/welle.io.log"
-    #cmd = f"nohup ~/welle-cli -c {config['channel']} -PC 1 -w 7575 -f $HOME/recordings/dab1.raw &>$HOME/welle.io.log"
+    # Start SNMP_SERVER.py
+    #cmd = f"nohup python3 -u {root}/SNMP_SERVER.py 1>{root}/logs/SNMP_SERVER.log 2>&1 &"
     #subprocess.run(cmd, shell=True)
 
-    # Start evaluation.py
-    #cmd = f"nohup python3 $HOME/dabing/dabing/evaluation.py >/dev/null 2>&1 &"
+    # Start welle-cli
+    #cmd = f"nohup welle-cli -c {config['channel']} -PC 1 -w 7575 -I {config['interval']} 1>{root}/logs/WELLE.log 2>&1 &"
+    #cmd = f"nohup welle-cli -c {config['channel']} -PC 1 -w 7575 -I {config['interval']} -f ~/recordings/dab1.raw 1>{root}/logs/WELLE.log 2>&1 &"
+    #subprocess.run(cmd, shell=True)
+
+    # Start EVALUATION.py
+    #cmd = f"nohup python3 -u {root}/EVALUATION.py 1>{root}/logs/EVALUATION.log 2>&1 &"
     #subprocess.run(cmd, shell=True)
 def stop():
+    # Interrupt processes
+    subprocess.run("pkill -SIGINT -f SNMP_SERVER.py", shell=True)
+    subprocess.run("pkill -SIGINT -f welle-cli", shell=True)
+    subprocess.run("pkill -SIGINT -f EVALUATION.py", shell=True)
+
+    # Just in case
     # Kill processes if exist
-    subprocess.run("pkill -f SNMPserver.py", shell=True)
-    subprocess.run("pkill -f welle-cli", shell=True)
-    subprocess.run("pkill -f evaluation.py", shell=True)
+    subprocess.run("pkill -SIGTERM -f SNMP_SERVER.py", shell=True)
+    subprocess.run("pkill -SIGTERM -f welle-cli", shell=True)
+    subprocess.run("pkill -SIGTERM -f EVALUATION.py", shell=True)
 
 
 # def processConfig():
@@ -110,3 +117,8 @@ def stop():
 #         return response
 #     except OSError as e:
 #         return (str(e), 500)
+
+if __name__ == "__main__":
+
+    print("Testing start() function:")
+    start()

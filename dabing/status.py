@@ -1,31 +1,31 @@
 #!/usr/bin/python3
 # Autor: SvajkaJ
-# Date:  19.8.2021
+# Date:  28.2.2022
 
 import subprocess
 
-def _check_process(process, label):
+def check_process(process):
     p = subprocess.Popen(f"ps fx | grep \"{process}\"", stdout=subprocess.PIPE, universal_newlines=True, shell=True)
     data = p.communicate()[0].splitlines()
     if len(data) < 3:
-        return { "label": label, "active": False }
+        return False
     else:
-        return { "label": label, "active": True }
+        return True
 
-def _check_usb(process, label):
+def check_usb(process):
     p = subprocess.Popen(f"lsusb | grep \"{process}\"", stdout=subprocess.PIPE, universal_newlines=True, shell=True)
     data = p.communicate()[0].splitlines()
     if len(data) < 1:
-        return { "label": label, "active": False }
+        return False
     else:
-        return { "label": label, "active": True }
+        return True
 
 def get_status_info():
     statusInfo = []
-    statusInfo.append(_check_process("SNMP_SERVER.py", "SNMP Server"))
-    statusInfo.append(_check_process("welle-cli", "welle-cli"))
-    statusInfo.append(_check_usb("RTL2838 DVB-T", "RTL-SDR RTL2838"))
+    statusInfo.append({ "label": "SNMP Server",     "active": check_process("SNMP_SERVER.py") })
+    statusInfo.append({ "label": "welle-cli",       "active": check_process("welle-cli") })
+    statusInfo.append({ "label": "RTL-SDR RTL2838", "active": check_usb("RTL2838 DVB-T") })
     return { "statusInfo": statusInfo }
 
 if __name__ == "__main__":
-    print(_check_usb("RTL2838 DVB-T", "RTL-SDR RTL2838"))
+    print("RTL-SDR RTL2838:", check_usb("RTL2838 DVB-T"))

@@ -5,7 +5,7 @@
 from pysnmp.hlapi import *
 from pysnmp.smi import builder, view
 from uptime import *
-from dabing import getMIBSource
+from .tools import getMIBSource
 
 
 def sendTrap(host, port, payload):

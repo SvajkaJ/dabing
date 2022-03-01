@@ -2,8 +2,8 @@
 # Autor: SvajkaJ
 # Date:  21.2.2022
 
-
-import psycopg2 # PostgreSQL adapter for python
+# PostgreSQL adapter for python
+import psycopg2  # type: ignore
 
 
 class PostgresInterface:

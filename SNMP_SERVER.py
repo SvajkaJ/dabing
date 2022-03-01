@@ -10,6 +10,7 @@ from pysnmp.smi import builder
 from pysnmp.entity import engine, config
 from pysnmp.entity.rfc3413 import cmdrsp, context, ntfrcv
 from pysnmp.carrier.asyncore.dgram import udp
+import signal
 
 from dabing import getConfig, updateConfig, getMIBSource
 
@@ -174,6 +175,13 @@ def cbFun(snmpEngine, stateReference, contextEngineId, contextName, varBinds, cb
     for name, val in varBinds:
         print('%s = %s' % (name.prettyPrint(), val.prettyPrint()))
 
+def mySignalHandler(signum, frame):
+    global snmpEngine
+    snmpEngine.transportDispatcher.jobFinished(1)
+
+signal.signal(signal.SIGINT,  mySignalHandler)
+signal.signal(signal.SIGTERM, mySignalHandler)
+
 # Register SNMP Applications at the SNMP engine for particular SNMP context
 cmdrsp.GetCommandResponder(snmpEngine, snmpContext)
 cmdrsp.SetCommandResponder(snmpEngine, snmpContext)
@@ -189,4 +197,5 @@ try:
 except KeyboardInterrupt:
     print("Closing Server!")
 finally:
+    print("SNMP_SERVER.py closes down!")
     snmpEngine.transportDispatcher.closeDispatcher()
