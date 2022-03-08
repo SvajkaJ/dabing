@@ -85,16 +85,16 @@ def start():
     root = getRootDir()
 
     # Start SNMP_SERVER.py
-    #cmd = f"nohup python3 -u {root}/SNMP_SERVER.py 1>{root}/logs/SNMP_SERVER.log 2>&1 &"
+    #cmd = f"nohup python3 -u {root}/SNMP_SERVER.py 1>/var/log/dabing/SNMP_SERVER.log 2>&1 &"
     #subprocess.run(cmd, shell=True)
 
     # Start welle-cli
-    #cmd = f"nohup welle-cli -c {config['channel']} -PC 1 -w 7575 -I {config['interval']} 1>{root}/logs/WELLE.log 2>&1 &"
-    #cmd = f"nohup welle-cli -c {config['channel']} -PC 1 -w 7575 -I {config['interval']} -f ~/recordings/dab1.raw 1>{root}/logs/WELLE.log 2>&1 &"
+    #cmd = f"nohup welle-cli -c {config['channel']} -PC 1 -w 1536 -I {config['interval']} 1>/var/log/dabing/WELLE.log 2>&1 &"
+    #cmd = f"nohup welle-cli -c {config['channel']} -PC 1 -w 1536 -I {config['interval']} -f ~/recordings/dab1.raw 1>/var/log/dabing/WELLE.log 2>&1 &"
     #subprocess.run(cmd, shell=True)
 
     # Start EVALUATION.py
-    #cmd = f"nohup python3 -u {root}/EVALUATION.py 1>{root}/logs/EVALUATION.log 2>&1 &"
+    #cmd = f"nohup python3 -u {root}/EVALUATION.py 1>/var/log/dabing/EVALUATION.log 2>&1 &"
     #subprocess.run(cmd, shell=True)
 def stop():
     # Interrupt processes

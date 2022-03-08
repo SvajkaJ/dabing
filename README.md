@@ -15,7 +15,8 @@ sudo apt install -y libfftw3-dev librtlsdr-dev libfaad-dev libmp3lame-dev libmpg
 sudo apt install -y libpq-dev libpqxx-dev              // c/c++ adapter for postgres
 sudo apt install -y alsa-utils                         // should be already installed
 sudo apt install -y libasound2-dev lame                // for alsa support in welle.io
-pip3 install pysnmp flask flask-cors uptime
+sudo apt install -y nginx
+pip3 install pysnmp flask flask-cors uptime uwsgi
 pip3 install psycopg2                                  // python adapter for postgres
 ```
 
@@ -23,7 +24,7 @@ pip3 install psycopg2                                  // python adapter for pos
 pip3 install uptime
 sudo apt install -y net-tools build-essential file
 sudo apt install -y nodejs npm
-sudo apt install nginx
+
 sudo apt-get install -y postgresql-contrib
 -->
 

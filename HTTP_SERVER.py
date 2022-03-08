@@ -12,21 +12,21 @@ server = Flask('Dabing', static_url_path='/')
 CORS(server)
 
 
-@server.route("/api/info/device") # http://192.168.178.35:5000/api/info/device
+@server.route("/flask/info/device") # http://192.168.178.35:5000/flask/info/device
 def HTTPgetDeviceInfo():
     try:
         return dabing.get_device_info()
     except:
         return ("Internal Server Error", 500)
 
-@server.route("/api/info/status") # http://192.168.178.35:5000/api/info/status
+@server.route("/flask/info/status") # http://192.168.178.35:5000/flask/info/status
 def HTTPgetStatusInfo():
     try:
         return dabing.get_status_info()
     except:
         return ("Internal Server Error", 500)
 
-@server.route("/api/start") # http://192.168.178.35:5000/api/start
+@server.route("/flask/start") # http://192.168.178.35:5000/flask/start
 def HTTPstart():
     try:
         dabing.stop()  # Just in case
@@ -35,7 +35,7 @@ def HTTPstart():
     except:
         return ("Internal Server Error", 500)
 
-@server.route("/api/stop") # http://192.168.178.35:5000/api/stop
+@server.route("/flask/stop") # http://192.168.178.35:5000/flask/stop
 def HTTPstop():
     try:
         dabing.stop()
@@ -43,7 +43,7 @@ def HTTPstop():
     except:
         return ("Internal Server Error", 500)
 
-@server.route("/api/config", methods=['GET']) # http://192.168.178.35:5000/api/config
+@server.route("/flask/config", methods=['GET']) # http://192.168.178.35:5000/flask/config
 def HTTPgetConfig():
     try:
         config = dabing.getConfig()
@@ -51,7 +51,7 @@ def HTTPgetConfig():
     except Exception as e:
         return (str(e), 500)
 
-@server.route("/api/config", methods=['POST']) # http://192.168.178.35:5000/api/config
+@server.route("/flask/config", methods=['POST']) # http://192.168.178.35:5000/flask/config
 def HTTPpostConfig():
     try:
         config = request.get_json()
@@ -60,7 +60,7 @@ def HTTPpostConfig():
     except Exception as e:
         return (str(e), 500)
 
-@server.route("/api/config", methods=['PUT']) # http://192.168.178.35:5000/api/config
+@server.route("/flask/config", methods=['PUT']) # http://192.168.178.35:5000/flask/config
 def HTTPupdateConfig():
     try:
         config = request.get_json()
@@ -69,8 +69,7 @@ def HTTPupdateConfig():
     except Exception as e:
         return (str(e), 500)
 
-
-@server.route("/api/snmp") # http://192.168.178.35:5000/api/snmp
+@server.route("/flask/snmp") # http://192.168.178.35:5000/flask/snmp
 def HTTPtestTrap():
     """Sends testing SNMP trap"""
 
@@ -85,4 +84,5 @@ def HTTPtestTrap():
     return ("OK", 200)
 
 if __name__ == "__main__":
-    server.run(debug=True, host="0.0.0.0", port=5000)
+    #server.run(debug=True, host="0.0.0.0", port=5000)
+    server.run()
