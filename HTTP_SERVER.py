@@ -13,16 +13,16 @@ CORS(server)
 
 
 @server.route("/flask/info/device") # http://192.168.178.35:5000/flask/info/device
-def HTTPgetDeviceInfo():
+def HTTP_GET_flask_info_device():
     try:
         return dabing.get_device_info()
     except:
         return ("Internal Server Error", 500)
 
 @server.route("/flask/info/status") # http://192.168.178.35:5000/flask/info/status
-def HTTPgetStatusInfo():
+def HTTP_GET_flask_info_status():
     try:
-        return dabing.get_status_info()
+        return jsonify(dabing.get_status_info())
     except:
         return ("Internal Server Error", 500)
 
@@ -30,8 +30,10 @@ def HTTPgetStatusInfo():
 def HTTPstart():
     try:
         dabing.stop()  # Just in case
-        dabing.start()
-        return ("OK", 200)
+        if dabing.start():
+            return ("OK", 200)
+        else:
+            return ("Bad Request", 400)
     except:
         return ("Internal Server Error", 500)
 
@@ -39,20 +41,21 @@ def HTTPstart():
 def HTTPstop():
     try:
         dabing.stop()
-        return ("OK", 200)
+        return ("", 204)
     except:
         return ("Internal Server Error", 500)
 
-@server.route("/flask/config", methods=['GET']) # http://192.168.178.35:5000/flask/config
-def HTTPgetConfig():
+
+@server.route("/flask/config/general", methods=['GET'])
+def HTTP_GET_flask_config_general():
     try:
         config = dabing.getConfig()
         return jsonify(config)
     except Exception as e:
         return (str(e), 500)
 
-@server.route("/flask/config", methods=['POST']) # http://192.168.178.35:5000/flask/config
-def HTTPpostConfig():
+@server.route("/flask/config/general", methods=['POST'])
+def HTTP_POST_flask_config_general():
     try:
         config = request.get_json()
         dabing.postConfig(config)
@@ -60,14 +63,33 @@ def HTTPpostConfig():
     except Exception as e:
         return (str(e), 500)
 
-@server.route("/flask/config", methods=['PUT']) # http://192.168.178.35:5000/flask/config
-def HTTPupdateConfig():
+@server.route("/flask/config/general", methods=['PUT']) # http://192.168.178.35:5000/flask/config
+def HTTP_PUT_flask_config_general():
     try:
         config = request.get_json()
         dabing.updateConfig(config)
         return ("OK", 200)
     except Exception as e:
         return (str(e), 500)
+
+
+@server.route("/flask/config/alarm", methods=['GET'])
+def HTTP_GET_flask_config_alarm():
+    try:
+        config = dabing.getAlarmConfig()
+        return jsonify(config)
+    except Exception as e:
+        return (str(e), 500)
+
+@server.route("/flask/config/alarm", methods=['POST'])
+def HTTP_POST_flask_config_alarm():
+    try:
+        config = request.get_json()
+        dabing.postAlarmConfig(config)
+        return ("OK", 200)
+    except Exception as e:
+        return (str(e), 500)
+
 
 @server.route("/flask/snmp") # http://192.168.178.35:5000/flask/snmp
 def HTTPtestTrap():

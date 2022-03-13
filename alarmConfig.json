@@ -2,49 +2,37 @@
     "snr": {
         "enabled": true,
         "low": 5,
-        "high": 25,
-        "trigger": 60,
-        "min": 0,
-        "max": 50
+        "high": 30,
+        "trigger": 120
     },
     "ber": {
         "enabled": true,
         "low": 0,
         "high": 0.25,
-        "trigger": 10,
-        "min": 0,
-        "max": 0.5
+        "trigger": 10
     },
     "power": {
         "enabled": true,
         "low": 20,
         "high": 50,
-        "trigger": 10,
-        "min": 0,
-        "max": 80
+        "trigger": 10
     },
     "fiber": {
         "enabled": true,
         "low": 0,
         "high": 1,
-        "trigger": 10,
-        "min": 0,
-        "max": 1
+        "trigger": 10
     },
     "signal": {
         "enabled": true,
         "low": 1,
         "high": 1,
-        "trigger": 10,
-        "min": 0,
-        "max": 1
+        "trigger": 10
     },
     "sync": {
         "enabled": true,
         "low": 1,
         "high": 1,
-        "trigger": 10,
-        "min": 0,
-        "max": 1
+        "trigger": 10
     }
 }

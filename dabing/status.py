@@ -21,11 +21,26 @@ def check_usb(process):
         return True
 
 def get_status_info():
-    statusInfo = []
-    statusInfo.append({ "label": "SNMP Server",     "active": check_process("SNMP_SERVER.py") })
-    statusInfo.append({ "label": "welle-cli",       "active": check_process("welle-cli") })
-    statusInfo.append({ "label": "RTL-SDR RTL2838", "active": check_usb("RTL2838 DVB-T") })
-    return { "statusInfo": statusInfo }
+    si = []
+    ps = check_process("SNMP_SERVER.py")
+    si.append({
+        "label": "SNMP Server",
+        "isOn": ps,
+        "isOk": ps == True
+    })
+    ps = check_process("welle-cli")
+    si.append({
+        "label": "welle-cli",
+        "isOn": ps,
+        "isOk": ps == True
+    })
+    ps = check_usb("RTL2838 DVB-T")
+    si.append({
+        "label": "RTL-SDR RTL2838",
+        "isOn": ps,
+        "isOk": True # DO NOT FORGET TO CHANGE IT ! ps == True
+    })
+    return si
 
 if __name__ == "__main__":
     print("RTL-SDR RTL2838:", check_usb("RTL2838 DVB-T"))
