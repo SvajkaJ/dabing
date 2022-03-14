@@ -16,7 +16,7 @@ sudo apt install -y libpq-dev libpqxx-dev              // c/c++ adapter for post
 sudo apt install -y alsa-utils                         // should be already installed
 sudo apt install -y libasound2-dev lame                // for alsa support in welle.io
 sudo apt install -y nginx
-pip3 install pysnmp flask flask-cors uptime uwsgi
+pip3 install pysnmp flask flask-cors flask-expects-json uptime uwsgi
 pip3 install psycopg2                                  // python adapter for postgres
 ```
 

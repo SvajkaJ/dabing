@@ -4,7 +4,8 @@
 
 from flask import Flask
 from flask import request, jsonify
-from flask_cors import CORS            # type: ignore
+from flask_cors import CORS                 # type: ignore
+from flask_expects_json import expects_json # type: ignore
 
 import dabing
 
@@ -22,12 +23,13 @@ def HTTP_GET_flask_info_device():
 @server.route("/flask/info/status") # http://192.168.178.35:5000/flask/info/status
 def HTTP_GET_flask_info_status():
     try:
-        return jsonify(dabing.get_status_info())
+        # get_status_info returns list => we need jsonify
+        return jsonify(dabing.get_status_info(dabing.getConfig()))
     except:
         return ("Internal Server Error", 500)
 
 @server.route("/flask/start") # http://192.168.178.35:5000/flask/start
-def HTTPstart():
+def HTTP_GET_flask_start():
     try:
         dabing.stop()  # Just in case
         if dabing.start():
@@ -38,7 +40,7 @@ def HTTPstart():
         return ("Internal Server Error", 500)
 
 @server.route("/flask/stop") # http://192.168.178.35:5000/flask/stop
-def HTTPstop():
+def HTTP_GET_flask_stop():
     try:
         dabing.stop()
         return ("", 204)
@@ -49,12 +51,13 @@ def HTTPstop():
 @server.route("/flask/config/general", methods=['GET'])
 def HTTP_GET_flask_config_general():
     try:
-        config = dabing.getConfig()
-        return jsonify(config)
+        return dabing.getConfig()
     except Exception as e:
         return (str(e), 500)
 
 @server.route("/flask/config/general", methods=['POST'])
+# Sanitizing input
+@expects_json(dabing.generalConfigSchema)            # type: ignore
 def HTTP_POST_flask_config_general():
     try:
         config = request.get_json()
@@ -63,25 +66,17 @@ def HTTP_POST_flask_config_general():
     except Exception as e:
         return (str(e), 500)
 
-@server.route("/flask/config/general", methods=['PUT']) # http://192.168.178.35:5000/flask/config
-def HTTP_PUT_flask_config_general():
-    try:
-        config = request.get_json()
-        dabing.updateConfig(config)
-        return ("OK", 200)
-    except Exception as e:
-        return (str(e), 500)
-
 
 @server.route("/flask/config/alarm", methods=['GET'])
 def HTTP_GET_flask_config_alarm():
     try:
-        config = dabing.getAlarmConfig()
-        return jsonify(config)
+        return dabing.getAlarmConfig()
     except Exception as e:
         return (str(e), 500)
 
 @server.route("/flask/config/alarm", methods=['POST'])
+# Sanitizing input
+@expects_json(dabing.alarmConfigSchema)            # type: ignore
 def HTTP_POST_flask_config_alarm():
     try:
         config = request.get_json()
@@ -91,15 +86,15 @@ def HTTP_POST_flask_config_alarm():
         return (str(e), 500)
 
 
-@server.route("/flask/snmp") # http://192.168.178.35:5000/flask/snmp
-def HTTPtestTrap():
-    """Sends testing SNMP trap"""
+@server.route("/flask/snmp/test")
+def HTTP_GET_flask_snmp_test():
+    """Tests SNMP trap."""
 
     config = dabing.getConfig()
 
     host = config['managerHostname']
     port = config['managerPort']
-    payload = f"Agent \"{config['agentIdentifier']}\" with hostname \"{config['agentHostname']}\" is testing SNMP Trap."
+    payload = f"Agent \"{config['agentIdentifier']}\" with label \"{config['agentLabel']}\" is testing SNMP Trap."
 
     dabing.testTrap(host, port, payload)
 

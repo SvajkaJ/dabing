@@ -4,6 +4,7 @@
 
 import subprocess
 
+
 def check_process(process):
     p = subprocess.Popen(f"ps fx | grep \"{process}\"", stdout=subprocess.PIPE, universal_newlines=True, shell=True)
     data = p.communicate()[0].splitlines()
@@ -20,7 +21,7 @@ def check_usb(process):
     else:
         return True
 
-def get_status_info():
+def get_status_info(config: dict):
     si = []
     ps = check_process("SNMP_SERVER.py")
     si.append({
@@ -40,7 +41,14 @@ def get_status_info():
         "isOn": ps,
         "isOk": True # DO NOT FORGET TO CHANGE IT ! ps == True
     })
+    ps = check_process("EVALUATION.py")
+    si.append({
+        "label": "EVALUATION",
+        "isOn": ps,
+        "isOk": ps == config["trapEnabled"]
+    })
     return si
 
 if __name__ == "__main__":
-    print("RTL-SDR RTL2838:", check_usb("RTL2838 DVB-T"))
+    #print("RTL-SDR RTL2838:", check_usb("RTL2838 DVB-T"))
+    pass

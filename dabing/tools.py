@@ -12,28 +12,83 @@ try:
 except:
     from status import get_status_info
 
-DABchannels = {
-    # Band III
-    174928000:  "5A",176640000:  "5B",178352000:  "5C",180064000:  "5D",
-    181936000:  "6A",183648000:  "6B",185360000:  "6C",187072000:  "6D",
-    188928000:  "7A",190640000:  "7B",192352000:  "7C",194064000:  "7D",
-    195936000:  "8A",197648000:  "8B",199360000:  "8C",201072000:  "8D",
-    202928000:  "9A",204640000:  "9B",206352000:  "9C",208064000:  "9D",
-    209936000: "10A",211648000: "10B",213360000: "10C",215072000: "10D",
-    216928000: "11A",218640000: "11B",220352000: "11C",222064000: "11D",
-    223936000: "12A",225648000: "12B",227360000: "12C",229072000: "12D",
-    230784000: "13A",232496000: "13B",234208000: "13C",235776000: "13D",237488000: "13E",239200000: "13F",
+freq = [
+    "174928","176640","178352","180064",
+    "181936","183648","185360","187072",
+    "188928","190640","192352","194064",
+    "195936","197648","199360","201072",
+    "202928","204640","206352","208064",
+    "209936","211648","213360","215072",
+    "216928","218640","220352","222064",
+    "223936","225648","227360","229072",
+    "230784","232496","234208","235776","237488","239200"
+]
 
-    # Band L
-    # T-DAB
-    1452960000: "LA",1454672000: "LB",1456384000: "LC",1458096000: "LD",
-    1459808000: "LE",1461520000: "LF",1463232000: "LG",1464944000: "LH",
-    1466656000: "LI",1468368000: "LJ",1470080000: "LK",1471792000: "LL",
-    1473504000: "LM",1475216000: "LN",1476928000: "LO",1478640000: "LP",
+channel = [
+     "5A", "5B", "5C", "5D",
+     "6A", "6B", "6C", "6D",
+     "7A", "7B", "7C", "7D",
+     "8A", "8B", "8C", "8D",
+     "9A", "9B", "9C", "9D",
+    "10A","10B","10C","10D",
+    "11A","11B","11C","11D",
+    "12A","12B","12C","12D",
+    "13A","13B","13C","13D","13E","13F"
+]
 
-    # S-DAB
-    1480352000: "LQ",1482064000: "LR",1483776000: "LS",1485488000: "LT",
-    1487200000: "LU",1488912000: "LV",1490624000: "LW",
+band = [
+    {
+        "key": i + 1,
+        "freq": f,
+        "channel": c
+    } for i, (f, c) in enumerate(zip(freq, channel))
+]
+
+generalConfigSchema = {
+    "type": "object",
+    "properties": {
+        "band": {
+            "type": "object",
+            "enum": band
+        },
+        "interval": { "type": "integer", "minimum": 96 },
+        "trapEnabled": { "type": "boolean" },
+        "agentIdentifier": { "type": "integer", "minimum": 0 },
+        "agentLabel": { "type": "string" },
+        "managerHostname": {
+            "type": "string",
+            "pattern": "^(?!0)(?!.*\\.$)((1?\\d?\\d|25[0-5]|2[0-4]\\d)(\\.|$)){4}$"
+        },
+        "managerPort": { "type": "integer", "exclusiveMinimum": 0, "maximum": 65535 }
+    },
+    "required": ["band", "interval", "trapEnabled", "agentIdentifier", "agentLabel", "managerHostname", "managerPort"],
+    "additionalProperties": False
+}
+
+alarmConfigSchema = {
+    "type": "object",
+    "properties": {
+        "snr": { "$ref": "#/$defs/element" },
+        "ber": { "$ref": "#/$defs/element" },
+        "power": { "$ref": "#/$defs/element" },
+        "fiber": { "$ref": "#/$defs/element" },
+        "signal": { "$ref": "#/$defs/element" },
+        "sync": { "$ref": "#/$defs/element" }
+    },
+    "required": ["snr", "ber", "power", "fiber", "signal", "sync"],
+    "additionalProperties": False,
+    "$defs": {
+        "element": {
+            "type": "object",
+            "properties": {
+                "enabled": { "type": "boolean" },
+                "low": { "type": "number" },
+                "high": { "type": "number" },
+                "trigger": { "type": "number" },
+            },
+            "required": ["enabled", "low", "high", "trigger"]
+        }
+    }
 }
 
 
@@ -97,11 +152,12 @@ def start():
     cmd = f"nohup welle-cli -c {config['band']['channel']} -PC 1 -w 1536 -I {config['interval']} -f ~/recordings/dab1.raw 1>/var/log/dabing/WELLE.log 2>&1 &"
     subprocess.run(cmd, shell=True)
 
-    # Start EVALUATION.py
-    #cmd = f"nohup python3 -u {root}/EVALUATION.py 1>/var/log/dabing/EVALUATION.log 2>&1 &"
-    #subprocess.run(cmd, shell=True)
+    if (config['trapEnabled']):
+        # Start EVALUATION.py
+        cmd = f"nohup python3 -u {root}/EVALUATION.py 1>/var/log/dabing/EVALUATION.log 2>&1 &"
+        subprocess.run(cmd, shell=True)
 
-    s = get_status_info()
+    s = get_status_info(config)
     subStatus = [x for x in s if x['isOk'] == False]
     return (len(subStatus) == 0)
 
@@ -129,5 +185,6 @@ def stop():
 
 if __name__ == "__main__":
 
-    print("Testing start() function:")
-    start()
+    #print("Testing start() function:")
+    #start()
+    print(generalConfigSchema)
