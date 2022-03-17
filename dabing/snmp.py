@@ -16,7 +16,7 @@ def sendTrap(host, port, payload):
     """
     Advanced example of sending a notification (trap).
 
-    Sends 'dabingMalfunctioningBroadcastingTrap' with 'dabingGenericPayload' as a payload.
+    Sends 'malfunctionTrap' with 'genericPayload' as a payload.
     Manager's hostname (IP address) and port must be passed as an argument to the function.
     Throws a generic Exception when error occurs.
     """
@@ -33,7 +33,7 @@ def sendTrap(host, port, payload):
     # SNMPv2-MIB::snmpTrapEnterprise.0
     #     Object Name: 1.3.6.1.6.3.1.1.4.3.0
     #     Value (OID): 1.3.6.1.4.1.55532.3.1.1
-    # DABING-MIB::dabingGenericPayload.0
+    # DABING-MIB::genericPayload.0
     #     Object Name: 1.3.6.1.4.1.55532.3.2.1.0
     #     Value (OctetString): "Value"
 
@@ -56,11 +56,11 @@ def sendTrap(host, port, payload):
                 ObjectType(
                     ObjectIdentity('SNMPv2-MIB', 'snmpTrapEnterprise', 0),
                     ObjectIdentity(
-                        'DABING-MIB', 'dabingMalfunctioningBroadcastingTrap'
+                        'DABING-MIB', 'malfunctionTrap'
                     ).resolveWithMib(mibViewController).getOid()
                 ),
                 ObjectType(
-                    ObjectIdentity('DABING-MIB', 'dabingGenericPayload', 0), OctetString(payload)
+                    ObjectIdentity('DABING-MIB', 'genericPayload', 0), OctetString(payload)
                 ).addMibSource(myMIBSource)
             )
         )
@@ -74,7 +74,7 @@ def testTrap(host, port, payload):
     """
     Advanced example of sending a notification (trap).
 
-    Sends 'dabingTestTrap' with 'dabingGenericPayload' as a payload.
+    Sends 'testTrap' with 'genericPayload' as a payload.
     Manager's hostname (IP address) and port must be passed as an argument to the function.
     Throws a generic Exception when error occurs.
     """
@@ -91,7 +91,7 @@ def testTrap(host, port, payload):
     # SNMPv2-MIB::snmpTrapEnterprise.0
     #     Object Name: 1.3.6.1.6.3.1.1.4.3.0
     #     Value (OID): 1.3.6.1.4.1.55532.3.1.2
-    # DABING-MIB::dabingGenericPayload.0
+    # DABING-MIB::genericPayload.0
     #     Object Name: 1.3.6.1.4.1.55532.3.2.1.0
     #     Value (OctetString): "Value"
 
@@ -114,11 +114,11 @@ def testTrap(host, port, payload):
                 ObjectType(
                     ObjectIdentity('SNMPv2-MIB', 'snmpTrapEnterprise', 0),
                     ObjectIdentity(
-                        'DABING-MIB', 'dabingTestTrap'
+                        'DABING-MIB', 'testTrap'
                     ).resolveWithMib(mibViewController).getOid()
                 ),
                 ObjectType(
-                    ObjectIdentity('DABING-MIB', 'dabingGenericPayload', 0), OctetString(payload)
+                    ObjectIdentity('DABING-MIB', 'genericPayload', 0), OctetString(payload)
                 ).addMibSource(myMIBSource)
             )
         )
@@ -213,12 +213,14 @@ def __SNMP_SET(host, port, obj, value):
 if __name__ == "__main__":
 
     objs = [
-        ('dabingChannel', '10A'),         # Type: OCTET STRING    read-write
-        ('dabingInterval', '500'),        # Type: OCTET STRING    read-write
-        ('dabingAgentIdentifier', 1),     # Type: Integer32       read-write
-        ('dabingAgentHostname', 'Test'),  # Type: OCTET STRING    read-only
-        ('dabingAgentLocation', 'Moon'),  # Type: OCTET STRING    read-only
-        ('dabingAgentStatus', 20)         # Type: Integer32       read-only
+        ('channel', '10A'),             # Type: OCTET STRING    read-only
+        ('interval', 500),              # Type: Integer32       read-only
+        ('trapEnabled', 1),             # Type: Integer32       read-write
+        ('agentIdentifier', 1),         # Type: Integer32       read-write
+        ('agentLabel', 'Test'),         # Type: OCTET STRING    read-write
+        ('agentStatus', 0),             # Type: Integer32       read-only
+        ('managerHostname', '0.0.0.0'), # Type: OCTET STRING    read-only
+        ('managerPort', 162)            # Type: Integer32       read-only
     ]
 
     # Testing GET request

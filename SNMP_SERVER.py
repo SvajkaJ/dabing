@@ -12,7 +12,7 @@ from pysnmp.entity.rfc3413 import cmdrsp, context, ntfrcv
 from pysnmp.carrier.asyncore.dgram import udp
 import signal
 
-from dabing import getConfig, updateConfig, getMIBSource
+from dabing import getConfig, updateConfig, getMIBSource, get_status
 
 HOST = '0.0.0.0'
 PORT = 16100
@@ -63,24 +63,37 @@ mibBuilder.addMibSources(builder.DirMibSource(getMIBSource()))
 # A base class for a custom Managed Object
 MibScalarInstance, = mibBuilder.importSymbols('SNMPv2-SMI', 'MibScalarInstance')
 
-
-class dabingChannelClassInstance(MibScalarInstance):
+# read-only
+class channelClassInstance(MibScalarInstance):
     def readGet(self, name, *args):
         print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
-        value = getConfig()["channel"]
+        value = getConfig()["band"]["channel"]
         return name, self.syntax.clone(value)
-    def writeCommit(self, name, val, idx, acInfo):
-        updateConfig({ "channel": str(val) })
 
-class dabingIntervalClassInstance(MibScalarInstance):
+# read-only
+class intervalClassInstance(MibScalarInstance):
     def readGet(self, name, *args):
         print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
         value = getConfig()["interval"]
+        return name, self.syntax.clone(int(value))
+
+#read-write
+class trapEnabledClassInstance(MibScalarInstance):
+    def readGet(self, name, *args):
+        print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
+        if getConfig()["trapEnabled"]:
+            value = 1
+        else:
+            value = 0
         return name, self.syntax.clone(value)
     def writeCommit(self, name, val, idx, acInfo):
-        updateConfig({ "interval": str(val) })
+        if (val == 0):
+            updateConfig({ "trapEnabled": False })
+        elif (val == 1):
+            updateConfig({ "trapEnabled": True })
 
-class dabingAgentIdentifierClassInstance(MibScalarInstance):
+# read-write
+class agentIdentifierClassInstance(MibScalarInstance):
     def readGet(self, name, *args):
         print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
         value = getConfig()["agentIdentifier"]
@@ -88,78 +101,99 @@ class dabingAgentIdentifierClassInstance(MibScalarInstance):
     def writeCommit(self, name, val, idx, acInfo):
         updateConfig({ "agentIdentifier": int(val) })
 
-class dabingAgentHostnameClassInstance(MibScalarInstance):
+# read-write
+class agentLabelClassInstance(MibScalarInstance):
     def readGet(self, name, *args):
         print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
-        value = getConfig()["agentHostname"]
+        value = getConfig()["agentLabel"]
         return name, self.syntax.clone(value)
     def writeCommit(self, name, val, idx, acInfo):
-        updateConfig({ "agentHostname": str(val) })
+        updateConfig({ "agentLabel": str(val) })
 
-class dabingAgentLocationClassInstance(MibScalarInstance):
+# read-only
+class agentStatusClassInstance(MibScalarInstance):
     def readGet(self, name, *args):
         print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
-        value = getConfig()["agentLocation"]
+        if get_status(getConfig()):
+            value = 1
+        else:
+            value = 0
         return name, self.syntax.clone(value)
-    def writeCommit(self, name, val, idx, acInfo):
-        updateConfig({ "agentLocation": str(val) })
 
-class dabingAgentStatusClassInstance(MibScalarInstance):
+# read-only
+class managerHostnameClassInstance(MibScalarInstance):
     def readGet(self, name, *args):
         print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
-        value = getConfig()["agentStatus"]
+        value = getConfig()["managerHostname"]
         return name, self.syntax.clone(value)
-    def writeCommit(self, name, val, idx, acInfo):
-        updateConfig({ "agentStatus": int(val) })
+
+# read-only
+class managerPortClassInstance(MibScalarInstance):
+    def readGet(self, name, *args):
+        print("Value %s has been requested!" % (str(name).replace(", ", ".")[1:-1]))
+        value = getConfig()["managerPort"]
+        return name, self.syntax.clone(value)
 
 # --------------------------------------------- #
 # --- Managed Object Instance Specification --- #
 # --------------------------------------------- #
 
-dabingChannel, dabingInterval, dabingAgentIdentifier, dabingAgentHostname, dabingAgentLocation, dabingAgentStatus, = mibBuilder.importSymbols(
+channel, interval, trapEnabled, agentIdentifier, agentLabel, agentStatus, managerHostname, managerPort, = mibBuilder.importSymbols(
     'DABING-MIB',
-    'dabingChannel',
-    'dabingInterval',
-    'dabingAgentIdentifier',
-    'dabingAgentHostname',
-    'dabingAgentLocation',
-    'dabingAgentStatus'
+    'channel',
+    'interval',
+    'trapEnabled',
+    'agentIdentifier',
+    'agentLabel',
+    'agentStatus',
+    'managerHostname',
+    'managerPort'
 )
 
-dabingChannelInstance = dabingChannelClassInstance(
-    dabingChannel.name, (0,), dabingChannel.syntax
+channelInstance = channelClassInstance(
+    channel.name, (0,), channel.syntax
 )
 
-dabingIntervalInstance = dabingIntervalClassInstance(
-    dabingInterval.name, (0,), dabingInterval.syntax
+intervalInstance = intervalClassInstance(
+    interval.name, (0,), interval.syntax
 )
 
-dabingAgentIdentifierInstance = dabingAgentIdentifierClassInstance(
-    dabingAgentIdentifier.name, (0,), dabingAgentIdentifier.syntax
+trapEnabledInstance = trapEnabledClassInstance(
+    trapEnabled.name, (0,), trapEnabled.syntax
 )
 
-dabingAgentHostnameInstance = dabingAgentHostnameClassInstance(
-    dabingAgentHostname.name, (0,), dabingAgentHostname.syntax
+agentIdentifierInstance = agentIdentifierClassInstance(
+    agentIdentifier.name, (0,), agentIdentifier.syntax
 )
 
-dabingAgentLocationInstance = dabingAgentLocationClassInstance(
-    dabingAgentLocation.name, (0,), dabingAgentLocation.syntax
+agentLabelInstance = agentLabelClassInstance(
+    agentLabel.name, (0,), agentLabel.syntax
 )
 
-dabingAgentStatusInstance = dabingAgentStatusClassInstance(
-    dabingAgentStatus.name, (0,), dabingAgentStatus.syntax
+agentStatusInstance = agentStatusClassInstance(
+    agentStatus.name, (0,), agentStatus.syntax
+)
+
+managerHostnameInstance = managerHostnameClassInstance(
+    managerHostname.name, (0,), managerHostname.syntax
+)
+
+managerPortInstance = managerPortClassInstance(
+    managerPort.name, (0,), managerPort.syntax
 )
 
 # Register Managed Object with a MIB tree
 mibBuilder.exportSymbols(
     # '__' prefixed MIB modules take precedence on indexing
     '__MY-DABING-MIB',
-    dabingChannelInstance = dabingChannelInstance,
-    dabingIntervalInstance = dabingIntervalInstance,
-    dabingAgentIdentifierInstance = dabingAgentIdentifierInstance,
-    dabingAgentHostnameInstance = dabingAgentHostnameInstance,
-    dabingAgentLocationInstance = dabingAgentLocationInstance,
-    dabingAgentStatusInstance = dabingAgentStatusInstance
+    channelInstance = channelInstance,
+    intervalInstance = intervalInstance,
+    trapEnabledInstance = trapEnabledInstance,
+    agentIdentifierInstance = agentIdentifierInstance,
+    agentLabelInstance = agentLabelInstance,
+    agentStatusInstance = agentStatusInstance,
+    managerHostnameInstance = managerHostnameInstance,
+    managerPortInstance = managerPortInstance
 )
 
 # ----------------------------------------------------- #

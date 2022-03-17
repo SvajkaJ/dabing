@@ -88,11 +88,12 @@ def onError(src):
     config = getConfig()
     host = config['managerHostname']
     port = config['managerPort']
-
-    print("Sending SNMP Trap!")
-    print(f"Alarm from \"{src}\"!")
-    sendTrap(host, port, f"Alarm from \"{src}\"!")
-    print("Trap sent successfully!")
+    trapEnabled = config['trapEnabled']
+    if (trapEnabled): # Just in case
+        print("Sending SNMP Trap!")
+        print(f"Alarm from \"{src}\"!")
+        sendTrap(host, port, f"Alarm from \"{src}\"!")
+        print("Trap sent successfully!")
 
 
 running = True

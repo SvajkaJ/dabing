@@ -137,6 +137,12 @@ def updateAlarmConfig(config):
     return __updateJSON("alarmConfig.json", config)
 
 
+def get_status(config):
+    s = get_status_info(config)
+    subS = [x for x in s if x['isOk'] == False]
+    return (len(subS) == 0)
+
+
 def start():
     """It is assumed that the configuration has already been set."""
     # Load the configuration
@@ -149,7 +155,7 @@ def start():
 
     # Start welle-cli
     #cmd = f"nohup welle-cli -c {config['band']['channel']} -PC 1 -w 1536 -I {config['interval']} 1>/var/log/dabing/WELLE.log 2>&1 &"
-    cmd = f"nohup welle-cli -c {config['band']['channel']} -PC 1 -w 1536 -I {config['interval']} -f ~/recordings/dab1.raw 1>/var/log/dabing/WELLE.log 2>&1 &"
+    cmd = f"nohup welle-cli -c {config['band']['channel']} -PC 1 -w 1536 -I {config['interval']} -f ~/recordings/dab_229072kHz_fs2048kHz_gain42_1_long.raw 1>/var/log/dabing/WELLE.log 2>&1 &"
     subprocess.run(cmd, shell=True)
 
     if (config['trapEnabled']):
@@ -157,9 +163,7 @@ def start():
         cmd = f"nohup python3 -u {root}/EVALUATION.py 1>/var/log/dabing/EVALUATION.log 2>&1 &"
         subprocess.run(cmd, shell=True)
 
-    s = get_status_info(config)
-    subStatus = [x for x in s if x['isOk'] == False]
-    return (len(subStatus) == 0)
+    return get_status(config)
 
 def stop():
     # Interrupt processes

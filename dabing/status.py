@@ -39,7 +39,7 @@ def get_status_info(config: dict):
     si.append({
         "label": "RTL-SDR RTL2838",
         "isOn": ps,
-        "isOk": True # DO NOT FORGET TO CHANGE IT ! ps == True
+        "isOk": ps == True
     })
     ps = check_process("EVALUATION.py")
     si.append({
@@ -50,5 +50,7 @@ def get_status_info(config: dict):
     return si
 
 if __name__ == "__main__":
-    #print("RTL-SDR RTL2838:", check_usb("RTL2838 DVB-T"))
-    pass
+    print("SNMP Server:", check_process("SNMP_SERVER.py"))
+    print("welle-cli:", check_process("welle-cli"))
+    print("RTL-SDR RTL2838:", check_usb("RTL2838 DVB-T"))
+    print("EVALUATION:", check_process("EVALUATION.py"))
