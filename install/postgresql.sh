@@ -1,5 +1,5 @@
 #!/bin/bash
-# Autor: Jakub Svajka
+# Autor: SvajkaJ
 # Date:  10.2.2022
 
 

@@ -150,10 +150,11 @@ def start():
     root = getRootDir()
 
     # Start SNMP_SERVER.py
-    cmd = f"nohup python3 -u {root}/SNMP_SERVER.py 1>/var/log/dabing/SNMP_SERVER.log 2>&1 &"
-    subprocess.run(cmd, shell=True)
+    #cmd = f"nohup python3 -u {root}/SNMP_SERVER.py 1>/var/log/dabing/SNMP_SERVER.log 2>&1 &"
+    #subprocess.run(cmd, shell=True)
 
     # Start welle-cli
+    # FIXME Uncomment the first line in production!
     #cmd = f"nohup welle-cli -c {config['band']['channel']} -PC 1 -w 1536 -I {config['interval']} 1>/var/log/dabing/WELLE.log 2>&1 &"
     cmd = f"nohup welle-cli -c {config['band']['channel']} -PC 1 -w 1536 -I {config['interval']} -f ~/recordings/dab_229072kHz_fs2048kHz_gain42_1_long.raw 1>/var/log/dabing/WELLE.log 2>&1 &"
     subprocess.run(cmd, shell=True)
@@ -167,13 +168,13 @@ def start():
 
 def stop():
     # Interrupt processes
-    subprocess.run("pkill -SIGINT -f SNMP_SERVER.py", shell=True)
+    #subprocess.run("pkill -SIGINT -f SNMP_SERVER.py", shell=True)
     subprocess.run("pkill -SIGINT -f welle-cli", shell=True)
     subprocess.run("pkill -SIGINT -f EVALUATION.py", shell=True)
 
     # Just in case
     # Kill processes if exist
-    subprocess.run("pkill -SIGTERM -f SNMP_SERVER.py", shell=True)
+    #subprocess.run("pkill -SIGTERM -f SNMP_SERVER.py", shell=True)
     subprocess.run("pkill -SIGTERM -f welle-cli", shell=True)
     subprocess.run("pkill -SIGTERM -f EVALUATION.py", shell=True)
 

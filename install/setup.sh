@@ -1,4 +1,7 @@
 #!/bin/bash
+# Autor: SvajkaJ
+# Date:  19.3.2022
+
 # Make sure to leave no spaces around the equal sign.
 # Otherwise, Bash will treat the variable name as a program to execute, and the = as its first parameter!
 
@@ -25,6 +28,7 @@ GREEN_COLOUR="\033[1;32m"
 # Changing the access permissions of files
 chmod +x ~/dabing/install/nginx.sh
 chmod +x ~/dabing/install/postgresql.sh
+chmod +x ~/dabing/install/snmp.sh
 chmod +x ~/dabing/install/welle.sh
 chmod +x ~/dabing/install/patch/patch_pysnmp.sh
 chmod +x ~/dabing/*.py # all .py files in dabing directory
@@ -66,15 +70,21 @@ do
     fi
 done
 
+# Setting up Postgres
+~/dabing/install/postgresql.sh
+
 # Welle.io
 git clone https://github.com/SvajkaJ/welle.io ~/welle.io
 ~/dabing/install/welle.sh
 
-# Setting up Postgres
-~/dabing/install/postgresql.sh
-
 # Patch pysnmp
 ~/dabing/install/patch/patch_pysnmp.sh
+
+# Setting up systemd
+~/dabing/install/systemd.sh
+
+# Setting up nginx
+~/dabing/install/nginx.sh
 
 echo -e "${YELLOW_COLOUR}INSTALLATION FINISHED!${DEFAULT_COLOUR}\n"
 echo -e "If you want to see the output of the installation process, check setup.log in ~/dabing/install directory!\n"
