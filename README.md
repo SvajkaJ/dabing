@@ -21,15 +21,14 @@ pip3 install psycopg2                                  // python adapter for pos
 ```
 
 <!--
-pip3 install uptime
-sudo apt install -y net-tools build-essential file
-sudo apt install -y nodejs npm
-
-sudo apt-get install -y postgresql-contrib
+I don't know if this is needed!
+sudo apt install -y net-tools build-essential file postgresql-contrib
 -->
 
 # Known bugs and limitations
 ## pysnmp
+https://github.com/etingof/pysnmp
+
 Library is no longer maintained!
 * **Directory:** "/home/pi/.local/lib/....../site-packages/pysnmp/smi"
 * **File:** "rft1902.py"
