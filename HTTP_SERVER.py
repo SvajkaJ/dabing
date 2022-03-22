@@ -2,7 +2,7 @@
 # Autor: SvajkaJ
 # Datum: 27.2.2022
 
-from email.policy import default
+
 from flask import Flask
 from flask import request, jsonify
 from flask_cors import CORS                 # type: ignore

@@ -26,7 +26,7 @@ def get_NW():
 
 def get_HN():
     """Hostname."""
-    p = subprocess.Popen("hostname -I", stdout=subprocess.PIPE, universal_newlines=True, shell=True)
+    p = subprocess.Popen("hostname", stdout=subprocess.PIPE, universal_newlines=True, shell=True)
     result = p.communicate()[0].strip()
     return result
 

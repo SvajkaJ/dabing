@@ -223,13 +223,14 @@ if __name__ == "__main__":
         ('managerPort', 162)            # Type: Integer32       read-only
     ]
 
-    # Testing GET request
-    for obj in objs:
-        __SNMP_GET('192.168.178.35', 16100, obj[0])
+    # # Testing GET request
+    # for obj in objs:
+    #     __SNMP_GET('192.168.178.35', 16100, obj[0])
 
-    # Testing SET request
-    for obj in objs:
-        __SNMP_SET('192.168.178.35', 16100, obj[0], obj[1])
+    # # Testing SET request
+    # for obj in objs:
+    #     __SNMP_SET('192.168.178.35', 16100, obj[0], obj[1])
 
     # Testing Trap
-    #__SNMP_TRAP('192.168.178.25', 162, f"Testing SNMP Trap.")
+    #__SNMP_TRAP('192.168.178.24', 16200, f"Testing SNMP Trap.")
+    testTrap('192.168.178.24', 16200, f"Testing SNMP Trap.")
