@@ -83,17 +83,19 @@ class Evaluator:
         return self.__evaluateS(self.syncState, tstz)
 
 
-def onError(src):
+def onError(src, tstz: datetime):
 
     config = getConfig()
     host = config['managerHostname']
     port = config['managerPort']
     trapEnabled = config['trapEnabled']
     if (trapEnabled): # Just in case
-        print("Sending SNMP Trap!")
-        print(f"Alarm from \"{src}\"!")
-        sendTrap(host, port, f"Alarm from \"{src}\"!")
-        print("Trap sent successfully!")
+        msg = "[Alarm]\n"
+        msg += f" -> datetime: {tstz.strftime('%Y-%m-%d %H:%M:%S%z')}\n"
+        msg += f" -> source: {src}"
+
+        print(msg)
+        sendTrap(host, port, msg)
 
 
 running = True
@@ -139,27 +141,27 @@ if __name__ == "__main__":
                 # record[5] == signal (bool datatype)
                 # record[6] == sync   (bool datatype)
                 # record[7] == tstz   (datetime datatype)
-                print("id:"    , str(record[0]).ljust(1), end=' | ')
-                print("snr:"   , str(record[1]).ljust(10), end='| ')
-                print("ber:"   , str(record[2]).ljust(15), end='| ')
-                print("power:" , str(record[3]).ljust(10), end='| ')
-                print("fiber:" , str(record[4]).ljust(14), end='| ')
-                print("signal:", str(record[5]), end=' | ')
-                print("sync:"  , str(record[6]), end=' | ')
-                print("tstz:"  , record[-1].strftime('%Y-%m-%d %H:%M:%S%z'))
+                # print("id:"    , str(record[0]).ljust(1), end=' | ')
+                # print("snr:"   , str(record[1]).ljust(10), end='| ')
+                # print("ber:"   , str(record[2]).ljust(15), end='| ')
+                # print("power:" , str(record[3]).ljust(11), end='| ')
+                # print("fiber:" , str(record[4]).ljust(14), end='| ')
+                # print("signal:", str(record[5]), end=' | ')
+                # print("sync:"  , str(record[6]), end=' | ')
+                # print("tstz:"  , record[-1].strftime('%Y-%m-%d %H:%M:%S%z'))
 
                 if (e.evaluateSNR(record[1], record[-1])):
-                    onError("snr")
+                    onError("snr", record[-1])
                 if (e.evaluateBER(record[2], record[-1])):
-                    onError("ber")
+                    onError("ber", record[-1])
                 if (e.evaluatePower(record[3], record[-1])):
-                    onError("power")
+                    onError("power", record[-1])
                 if (e.evaluateFIBER(record[4], record[-1])):
-                    onError("fiber")
+                    onError("fiber", record[-1])
                 if (e.evaluateSignal(record[5], record[-1])):
-                    onError("signal")
+                    onError("signal", record[-1])
                 if (e.evaluateSync(record[6], record[-1])):
-                    onError("sync")
+                    onError("sync", record[-1])
 
                 last_tstz = record[-1].timestamp()
 

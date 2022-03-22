@@ -215,7 +215,7 @@ if __name__ == "__main__":
     objs = [
         ('channel', '10A'),             # Type: OCTET STRING    read-only
         ('interval', 500),              # Type: Integer32       read-only
-        ('trapEnabled', 1),             # Type: Integer32       read-write
+        ('trapEnabled', 1),             # Type: Integer32       read-only
         ('agentIdentifier', 1),         # Type: Integer32       read-write
         ('agentLabel', 'Test'),         # Type: OCTET STRING    read-write
         ('agentStatus', 0),             # Type: Integer32       read-only

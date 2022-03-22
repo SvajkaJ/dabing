@@ -82,10 +82,10 @@ interval OBJECT-TYPE
 
 trapEnabled OBJECT-TYPE
     SYNTAX      Integer32
-    MAX-ACCESS  read-write
+    MAX-ACCESS  read-only
     STATUS      current
     DESCRIPTION
-        "This is a read-write object which is an Integer32. It's value
+        "This is a read-only object which is an Integer32. It's value
          indicates whether the monitoring device is allowed to send
          'malfunctionTrap' trap. ( false=0 | true=1 )"
     ::= { Parameters 3 }

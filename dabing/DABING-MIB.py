@@ -1,15 +1,15 @@
 #
 # PySNMP MIB module DABING-MIB (http://snmplabs.com/pysmi)
 # ASN.1 source file://..\DABING-MIB.mib
-# Produced by pysmi-0.3.4 at Thu Mar 17 14:52:46 2022
+# Produced by pysmi-0.3.4 at Tue Mar 22 12:53:47 2022
 # On host ? platform ? version ? by user ?
 # Using Python version 3.8.2 (tags/v3.8.2:7b3ab59, Feb 25 2020, 22:45:29) [MSC v.1916 32 bit (Intel)]
 #
-ObjectIdentifier, Integer, OctetString = mibBuilder.importSymbols("ASN1", "ObjectIdentifier", "Integer", "OctetString")
+OctetString, ObjectIdentifier, Integer = mibBuilder.importSymbols("ASN1", "OctetString", "ObjectIdentifier", "Integer")
 NamedValues, = mibBuilder.importSymbols("ASN1-ENUMERATION", "NamedValues")
-ValueRangeConstraint, ConstraintsIntersection, SingleValueConstraint, ValueSizeConstraint, ConstraintsUnion = mibBuilder.importSymbols("ASN1-REFINEMENT", "ValueRangeConstraint", "ConstraintsIntersection", "SingleValueConstraint", "ValueSizeConstraint", "ConstraintsUnion")
-ModuleCompliance, NotificationGroup = mibBuilder.importSymbols("SNMPv2-CONF", "ModuleCompliance", "NotificationGroup")
-NotificationType, ModuleIdentity, Bits, Unsigned32, MibScalar, MibTable, MibTableRow, MibTableColumn, iso, TimeTicks, Counter64, Integer32, IpAddress, Counter32, ObjectIdentity, Gauge32, MibIdentifier, enterprises = mibBuilder.importSymbols("SNMPv2-SMI", "NotificationType", "ModuleIdentity", "Bits", "Unsigned32", "MibScalar", "MibTable", "MibTableRow", "MibTableColumn", "iso", "TimeTicks", "Counter64", "Integer32", "IpAddress", "Counter32", "ObjectIdentity", "Gauge32", "MibIdentifier", "enterprises")
+ConstraintsIntersection, ConstraintsUnion, ValueRangeConstraint, SingleValueConstraint, ValueSizeConstraint = mibBuilder.importSymbols("ASN1-REFINEMENT", "ConstraintsIntersection", "ConstraintsUnion", "ValueRangeConstraint", "SingleValueConstraint", "ValueSizeConstraint")
+NotificationGroup, ModuleCompliance = mibBuilder.importSymbols("SNMPv2-CONF", "NotificationGroup", "ModuleCompliance")
+MibScalar, MibTable, MibTableRow, MibTableColumn, Gauge32, ModuleIdentity, IpAddress, ObjectIdentity, iso, Counter32, Unsigned32, Bits, NotificationType, TimeTicks, Counter64, enterprises, MibIdentifier, Integer32 = mibBuilder.importSymbols("SNMPv2-SMI", "MibScalar", "MibTable", "MibTableRow", "MibTableColumn", "Gauge32", "ModuleIdentity", "IpAddress", "ObjectIdentity", "iso", "Counter32", "Unsigned32", "Bits", "NotificationType", "TimeTicks", "Counter64", "enterprises", "MibIdentifier", "Integer32")
 DisplayString, TextualConvention = mibBuilder.importSymbols("SNMPv2-TC", "DisplayString", "TextualConvention")
 dabing = ModuleIdentity((1, 3, 6, 1, 4, 1, 55532))
 dabing.setRevisions(('2022-03-17 00:00',))
@@ -25,7 +25,7 @@ channel = MibScalar((1, 3, 6, 1, 4, 1, 55532, 1, 1), OctetString().clone('12C'))
 if mibBuilder.loadTexts: channel.setStatus('current')
 interval = MibScalar((1, 3, 6, 1, 4, 1, 55532, 1, 2), Integer32().clone(960)).setMaxAccess("readonly")
 if mibBuilder.loadTexts: interval.setStatus('current')
-trapEnabled = MibScalar((1, 3, 6, 1, 4, 1, 55532, 1, 3), Integer32()).setMaxAccess("readwrite")
+trapEnabled = MibScalar((1, 3, 6, 1, 4, 1, 55532, 1, 3), Integer32()).setMaxAccess("readonly")
 if mibBuilder.loadTexts: trapEnabled.setStatus('current')
 agentIdentifier = MibScalar((1, 3, 6, 1, 4, 1, 55532, 2, 1), Integer32()).setMaxAccess("readwrite")
 if mibBuilder.loadTexts: agentIdentifier.setStatus('current')
@@ -43,4 +43,4 @@ malfunctionTrap = NotificationType((1, 3, 6, 1, 4, 1, 55532, 4, 1, 1)).setObject
 if mibBuilder.loadTexts: malfunctionTrap.setStatus('current')
 testTrap = NotificationType((1, 3, 6, 1, 4, 1, 55532, 4, 1, 2)).setObjects(("DABING-MIB", "genericPayload"))
 if mibBuilder.loadTexts: testTrap.setStatus('current')
-mibBuilder.exportSymbols("DABING-MIB", interval=interval, managerHostname=managerHostname, Agent=Agent, Notifications=Notifications, NotificationPrefix=NotificationPrefix, Parameters=Parameters, agentStatus=agentStatus, managerPort=managerPort, trapEnabled=trapEnabled, Manager=Manager, dabing=dabing, testTrap=testTrap, channel=channel, genericPayload=genericPayload, PYSNMP_MODULE_ID=dabing, agentIdentifier=agentIdentifier, agentLabel=agentLabel, malfunctionTrap=malfunctionTrap, NotificationObjects=NotificationObjects)
+mibBuilder.exportSymbols("DABING-MIB", Notifications=Notifications, channel=channel, PYSNMP_MODULE_ID=dabing, testTrap=testTrap, malfunctionTrap=malfunctionTrap, Parameters=Parameters, agentLabel=agentLabel, managerPort=managerPort, trapEnabled=trapEnabled, managerHostname=managerHostname, Manager=Manager, NotificationPrefix=NotificationPrefix, Agent=Agent, genericPayload=genericPayload, NotificationObjects=NotificationObjects, agentIdentifier=agentIdentifier, dabing=dabing, agentStatus=agentStatus, interval=interval)
