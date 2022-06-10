@@ -28,7 +28,6 @@ GREEN_COLOUR="\033[1;32m"
 # Changing the access permissions of files
 chmod +x ~/dabing/install/nginx.sh
 chmod +x ~/dabing/install/postgresql.sh
-chmod +x ~/dabing/install/snmp.sh
 chmod +x ~/dabing/install/welle.sh
 chmod +x ~/dabing/install/patch/patch_pysnmp.sh
 chmod +x ~/dabing/*.py # all .py files in dabing directory
